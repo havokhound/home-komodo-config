@@ -53,23 +53,9 @@ npm config set @havokhound:registry https://npm.havokhound.co.uk
 npm login --registry https://npm.havokhound.co.uk
 ```
 
-## Step 5: Configure Traefik
+## Step 5: Configure reverse proxy
 
-Traefik is configured via Docker labels already set in `compose.yaml`. No additional Traefik config files are needed — Traefik's Docker provider picks up the labels automatically when the stack is deployed.
-
-The labels assume:
-- Traefik is running and using the Docker provider
-- An external Docker network named `traefik` exists (the one Traefik is attached to)
-- An HTTPS entrypoint named `websecure` is configured
-- A cert resolver named `letsencrypt` is configured for TLS
-
-If your Traefik setup uses different names for any of these, update the corresponding labels in `stacks/verdaccio/compose.yaml`.
-
-To create the external Traefik network if it doesn't exist:
-
-```bash
-docker network create traefik
-```
+Verdaccio listens on port `4873`. Point `npm.havokhound.co.uk` to this port via your reverse proxy. Traefik labels will be added to `compose.yaml` once the Traefik network is set up on this Docker host.
 
 ## Syncing config changes
 
