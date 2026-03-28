@@ -1,0 +1,38 @@
+services:
+  verdaccio:
+    image: verdaccio/verdaccio:6.3.2
+    container_name: verdaccio
+    restart: unless-stopped
+    ports:
+      - "4873:4873"
+    volumes:
+      - ./config.yaml:/verdaccio/conf/config.yaml:ro
+      - verdaccio_plugins:/verdaccio/plugins
+      - verdaccio_storage:/verdaccio/storage
+    environment:
+      - VERDACCIO_PORT=4873
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.verdaccio.rule=Host(`npm.havokhound.co.uk`)"
+      - "traefik.http.routers.verdaccio.entrypoints=websecure"
+      - "traefik.http.routers.verdaccio.tls=true"
+      - "traefik.http.routers.verdaccio.tls.certresolver=letsencrypt"
+      - "traefik.http.services.verdaccio.loadbalancer.server.port=4873"
+    networks:
+      - default
+      - traefik
+
+volumes:
+  verdaccio_plugins:
+    driver: local
+
+  verdaccio_storage:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: "addr=192.168.50.64,rw,nfsvers=4,hard,intr"
+      device: ":/volume1/registry/npm"
+
+networks:
+  traefik:
+    external: true
