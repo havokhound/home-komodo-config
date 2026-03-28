@@ -30,17 +30,9 @@
 
 ## Step 3: Add the First User
 
-Verdaccio does not allow self-registration (`max_users: -1`). Add users manually via the CLI on your server:
+Verdaccio does not allow self-registration (`max_users: -1`). Add users manually using `htpasswd` via the container:
 
 ```bash
-docker exec -it verdaccio sh
-npx verdaccio --adduser
-```
-
-Or use the `htpasswd` utility directly on the NFS share:
-
-```bash
-# Install apache2-utils on your server if not present
 docker exec verdaccio htpasswd -B /verdaccio/storage/.htpasswd <username>
 ```
 
