@@ -1,0 +1,33 @@
+storage: /verdaccio/storage
+plugins: /verdaccio/plugins
+
+auth:
+  htpasswd:
+    file: /verdaccio/storage/.htpasswd
+    max_users: -1
+
+uplinks: {}
+
+packages:
+  '@*/*':
+    access: $anonymous
+    publish: $authenticated
+    unpublish: $authenticated
+
+  '**':
+    access: $anonymous
+    publish: $authenticated
+    unpublish: $authenticated
+
+server:
+  keepAliveTimeout: 60
+
+web:
+  title: Havokhound NPM Registry
+
+log:
+  type: stdout
+  format: pretty
+  level: http
+
+url_prefix: https://npm.havokhound.co.uk
