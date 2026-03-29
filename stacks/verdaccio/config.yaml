@@ -9,12 +9,12 @@ auth:
 uplinks: {}
 
 packages:
-  '@*/*':
+  "@*/*":
     access: $anonymous
     publish: $authenticated
     unpublish: $authenticated
 
-  '**':
+  "**":
     access: $anonymous
     publish: $authenticated
     unpublish: $authenticated
@@ -29,5 +29,3 @@ log:
   type: stdout
   format: pretty
   level: http
-
-url_prefix: https://npm.havokhound.co.uk
