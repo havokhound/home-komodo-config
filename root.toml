@@ -1,0 +1,37 @@
+# Servers
+
+[[server]]
+name = "fedora-server"
+[server.config]
+enabled = true
+
+[[server]]
+name = "nuc01-docker"
+[server.config]
+enabled = true
+
+# Stacks
+
+[[stack]]
+name = "verdaccio"
+[stack.config]
+server = "fedora-server"
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+linked_repo = "home-komodo-config"
+run_directory = "stacks/verdaccio"
+config_files = [
+  { path = "config.yaml", services = [
+    "verdaccio",
+  ], requires = "Redeploy" },
+]
+
+# Repositories
+
+[[repo]]
+name = "home-komodo-config"
+[repo.config]
+server = "nuc01-docker"
+git_account = "geinome"
+repo = "havokhound/home-komodo-config"
