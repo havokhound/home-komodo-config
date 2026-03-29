@@ -11,6 +11,7 @@ services:
       - verdaccio_storage:/verdaccio/storage
     environment:
       - VERDACCIO_PORT=4873
+      - VERDACCIO_PUBLIC_URL=https://npm.havokhound.co.uk
 
 volumes:
   verdaccio_plugins:
@@ -22,4 +23,3 @@ volumes:
       type: nfs
       o: "addr=192.168.50.64,rw,nfsvers=4,hard,intr"
       device: ":/volume1/registry/npm"
-
