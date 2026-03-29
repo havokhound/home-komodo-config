@@ -3,7 +3,7 @@ plugins: /verdaccio/plugins
 
 auth:
   htpasswd:
-    file: /verdaccio/storage/.htpasswd
+    file: /verdaccio/storage/htpasswd
     max_users: 3
 
 uplinks: {}
