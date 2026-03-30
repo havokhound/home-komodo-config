@@ -1,0 +1,66 @@
+---
+theme: light
+jwt_secret: # set via AUTHELIA_IDENTITY_VALIDATION_RESET_PASSWORD_JWT_SECRET env var
+
+server:
+  address: tcp://0.0.0.0:9091/
+
+log:
+  level: info
+  format: text
+
+totp:
+  issuer: havokhound.co.uk
+  period: 30
+  skew: 1
+
+authentication_backend:
+  password_reset:
+    disable: false
+  ldap:
+    implementation: custom
+    address: ldap://lldap:3890
+    timeout: 5s
+    start_tls: false
+    base_dn: dc=havokhound,dc=co,dc=uk
+    additional_users_dn: ou=people
+    users_filter: "(&(|({username_attribute}={input})({mail_attribute}={input}))(objectClass=person))"
+    additional_groups_dn: ou=groups
+    groups_filter: "(member={dn})"
+    user: uid=admin,ou=people,dc=havokhound,dc=co,dc=uk
+    password: # set via AUTHELIA_AUTHENTICATION_BACKEND_LDAP_PASSWORD env var
+    attributes:
+      username: uid
+      display_name: displayName
+      mail: mail
+      group_name: cn
+
+session:
+  secret: # set via AUTHELIA_SESSION_SECRET env var
+  cookies:
+    - domain: havokhound.co.uk
+      authelia_url: https://auth.havokhound.co.uk
+      default_redirection_url: https://auth.havokhound.co.uk
+  expiration: 1h
+  inactivity: 5m
+  remember_me: 1M
+
+storage:
+  encryption_key: # set via AUTHELIA_STORAGE_ENCRYPTION_KEY env var
+  postgres:
+    address: tcp://postgres:5432
+    database: authelia
+    username: authelia
+    password: # set via AUTHELIA_STORAGE_POSTGRES_PASSWORD env var
+
+access_control:
+  default_policy: deny
+  rules:
+    - domain: "*.havokhound.co.uk"
+      policy: one_factor
+
+notifier:
+  filesystem:
+    filename: /config/notification.txt
+
+identity_providers: {}

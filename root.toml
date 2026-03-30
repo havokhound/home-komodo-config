@@ -27,6 +27,24 @@ config_files = [
   ], requires = "Redeploy" },
 ]
 
+[[stack]]
+name = "auth"
+[stack.config]
+server = "fedora-server"
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+linked_repo = "home-komodo-config"
+run_directory = "stacks/auth"
+config_files = [
+  { path = "authelia-configuration.yml", services = [
+    "authelia",
+  ], requires = "Redeploy" },
+  { path = "init-db.sh", services = [
+    "postgres",
+  ], requires = "Redeploy" },
+]
+
 # Repositories
 
 [[repo]]

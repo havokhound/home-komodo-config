@@ -2,9 +2,14 @@ storage: /verdaccio/storage
 plugins: /verdaccio/plugins
 
 auth:
-  htpasswd:
-    file: /verdaccio/storage/htpasswd
-    max_users: 3
+  ldap:
+    type: ldap
+    client_options:
+      url: ldap://lldap:3890
+      searchBase: ou=people,dc=havokhound,dc=co,dc=uk
+      searchFilter: "(uid={{username}})"
+      adminDn: uid=admin,ou=people,dc=havokhound,dc=co,dc=uk
+      adminPassword: "${VERDACCIO_LDAP_BIND_PASSWORD}"
 
 uplinks: {}
 

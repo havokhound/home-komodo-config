@@ -5,6 +5,11 @@
 - Komodo 2.0 running and connected to your server
 - GitHub PAT configured in Komodo (Contents: Read on havokhound/home-komodo-config)
 - NFS share ownership fixed (see Task 3 in implementation plan)
+- **Auth stack deployed** (`stacks/auth/`) — LLDAP and Authelia must be running
+- **Docker network** `auth-net` created on the target server:
+  ```bash
+  docker network create auth-net
+  ```
 
 ## Step 1: Configure Git Provider
 
@@ -28,15 +33,13 @@
 3. Select your server
 4. Save and deploy
 
-## Step 3: Add the First User
+## Step 3: Add Users via LLDAP
 
-Verdaccio does not allow self-registration (`max_users: -1`). Add users manually using `htpasswd` via the container:
+Users are now managed centrally in LLDAP, not per-service.
 
-```bash
-docker exec verdaccio htpasswd -B /verdaccio/storage/.htpasswd <username>
-```
-
-Enter a password when prompted. The user can now publish packages.
+1. Browse to `https://ldap.havokhound.co.uk` and log in with the LLDAP admin password
+2. Go to **Create a user** and fill in username, email, display name, and password
+3. The user can now authenticate against Verdaccio and any other service backed by LLDAP
 
 ## Step 4: Configure npm clients
 

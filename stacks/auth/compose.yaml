@@ -1,0 +1,87 @@
+services:
+  postgres:
+    image: postgres:18.3-alpine
+    container_name: auth-postgres
+    restart: unless-stopped
+    volumes:
+      - ./init-db.sh:/docker-entrypoint-initdb.d/init-db.sh:ro
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    networks:
+      - auth-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  lldap:
+    image: lldap/lldap:v0.6
+    container_name: auth-lldap
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - lldap_data:/data
+    environment:
+      - LLDAP_LDAP_BASE_DN=dc=havokhound,dc=co,dc=uk
+      - LLDAP_DATABASE_URL=postgres://lldap:${LLDAP_DB_PASSWORD}@postgres/lldap
+      - LLDAP_JWT_SECRET=${LLDAP_JWT_SECRET}
+      - LLDAP_LDAP_USER_PASS=${LLDAP_LDAP_USER_PASS}
+      - LLDAP_LDAP_USER_EMAIL=admin@havokhound.co.uk
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.lldap.rule=Host(`ldap.havokhound.co.uk`)
+      - traefik.http.routers.lldap.entrypoints=websecure
+      - traefik.http.routers.lldap.tls.certresolver=letsencrypt
+      - traefik.http.services.lldap.loadbalancer.server.port=17170
+    networks:
+      - auth-net
+
+  authelia:
+    image: authelia/authelia:4
+    container_name: auth-authelia
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      lldap:
+        condition: service_started
+    volumes:
+      - ./authelia-configuration.yml:/config/configuration.yml:ro
+    environment:
+      - AUTHELIA_IDENTITY_VALIDATION_RESET_PASSWORD_JWT_SECRET=${AUTHELIA_JWT_SECRET}
+      - AUTHELIA_SESSION_SECRET=${AUTHELIA_SESSION_SECRET}
+      - AUTHELIA_STORAGE_ENCRYPTION_KEY=${AUTHELIA_STORAGE_ENCRYPTION_KEY}
+      - AUTHELIA_STORAGE_POSTGRES_PASSWORD=${AUTHELIA_DB_PASSWORD}
+      - AUTHELIA_AUTHENTICATION_BACKEND_LDAP_PASSWORD=${LLDAP_LDAP_USER_PASS}
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.authelia.rule=Host(`auth.havokhound.co.uk`)
+      - traefik.http.routers.authelia.entrypoints=websecure
+      - traefik.http.routers.authelia.tls.certresolver=letsencrypt
+      - traefik.http.services.authelia.loadbalancer.server.port=9091
+    networks:
+      - auth-net
+
+networks:
+  auth-net:
+    external: true
+
+volumes:
+  postgres_data:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: "addr=192.168.50.64,rw,nfsvers=4,hard,intr"
+      device: ":/volume1/auth/postgres"
+
+  lldap_data:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: "addr=192.168.50.64,rw,nfsvers=4,hard,intr"
+      device: ":/volume1/auth/lldap"

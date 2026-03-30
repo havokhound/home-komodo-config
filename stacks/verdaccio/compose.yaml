@@ -1,6 +1,6 @@
 services:
   verdaccio:
-    image: verdaccio/verdaccio:6.3.2
+    build: .
     container_name: verdaccio
     restart: unless-stopped
     ports:
@@ -12,6 +12,14 @@ services:
     environment:
       - VERDACCIO_PORT=4873
       - VERDACCIO_PUBLIC_URL=https://npm.havokhound.co.uk
+      - VERDACCIO_LDAP_BIND_PASSWORD=${LLDAP_LDAP_USER_PASS}
+    networks:
+      - default
+      - auth-net
+
+networks:
+  auth-net:
+    external: true
 
 volumes:
   verdaccio_plugins:
