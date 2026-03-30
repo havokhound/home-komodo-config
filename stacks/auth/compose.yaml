@@ -9,6 +9,8 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - LLDAP_DB_PASSWORD=${LLDAP_DB_PASSWORD}
+      - AUTHELIA_DB_PASSWORD=${AUTHELIA_DB_PASSWORD}
     networks:
       - auth-net
     healthcheck:

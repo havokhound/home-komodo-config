@@ -23,18 +23,19 @@ This network is shared between the `auth` and `verdaccio` stacks.
 
 The auth stack requires the following secrets. Generate strong random values and configure them in Komodo as environment variables for the `auth` stack, or place them in a `.env` file on the server in the stack's run directory.
 
-| Variable | Description | Notes |
-|----------|-------------|-------|
-| `POSTGRES_PASSWORD` | PostgreSQL superuser password | Used only by the postgres container |
-| `LLDAP_JWT_SECRET` | LLDAP JWT signing key | Random string, min 20 chars |
-| `LLDAP_LDAP_USER_PASS` | LLDAP admin password | Used to log into LLDAP web UI and as bind password |
-| `LLDAP_DB_PASSWORD` | LLDAP PostgreSQL user password | Must match what init-db.sh creates |
-| `AUTHELIA_JWT_SECRET` | Authelia identity validation JWT | Random string, min 20 chars |
-| `AUTHELIA_SESSION_SECRET` | Authelia session encryption | Random string, min 20 chars |
-| `AUTHELIA_STORAGE_ENCRYPTION_KEY` | Authelia storage encryption key | Random string, min 20 chars |
-| `AUTHELIA_DB_PASSWORD` | Authelia PostgreSQL user password | Must match what init-db.sh creates |
+| Variable                          | Description                       | Notes                                              |
+| --------------------------------- | --------------------------------- | -------------------------------------------------- |
+| `POSTGRES_PASSWORD`               | PostgreSQL superuser password     | Used only by the postgres container                |
+| `LLDAP_JWT_SECRET`                | LLDAP JWT signing key             | Random string, min 20 chars                        |
+| `LLDAP_LDAP_USER_PASS`            | LLDAP admin password              | Used to log into LLDAP web UI and as bind password |
+| `LLDAP_DB_PASSWORD`               | LLDAP PostgreSQL user password    | Must match what init-db.sh creates                 |
+| `AUTHELIA_JWT_SECRET`             | Authelia identity validation JWT  | Random string, min 20 chars                        |
+| `AUTHELIA_SESSION_SECRET`         | Authelia session encryption       | Random string, min 20 chars                        |
+| `AUTHELIA_STORAGE_ENCRYPTION_KEY` | Authelia storage encryption key   | Random string, min 20 chars                        |
+| `AUTHELIA_DB_PASSWORD`            | Authelia PostgreSQL user password | Must match what init-db.sh creates                 |
 
 Generate secrets with:
+
 ```bash
 openssl rand -hex 32
 ```
@@ -55,9 +56,11 @@ openssl rand -hex 32
 ## Step 4: Verify Services
 
 1. **PostgreSQL**: Check databases exist:
+
    ```bash
    docker exec auth-postgres psql -U postgres -c '\l'
    ```
+
    You should see both `lldap` and `authelia` databases.
 
 2. **LLDAP**: Browse to `https://ldap.havokhound.co.uk`
